@@ -1,7 +1,8 @@
-#配置数据库的连接信息
+# 配置项目信息
 spring:
   application:
     name: tlais-web-management
+  # 配置数据库连接信息
   datasource:
     url: jdbc:mysql://localhost:3306/tlias
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,3 +12,5 @@ spring:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启驼峰命名
+    map-underscore-to-camel-case: true

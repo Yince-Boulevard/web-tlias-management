@@ -13,7 +13,7 @@ public class Result {
     public static Result success() {
         Result result = new Result();
         result.code = 1;
-        result.msg = "操作成功";
+        result.msg = "success";
         return result;
     }
 
@@ -21,7 +21,7 @@ public class Result {
         Result result = new Result();
         result.code = 1;
         result.data = object;
-        result.msg = "操作成功";
+        result.msg = "success";
         return result;
     }
 
