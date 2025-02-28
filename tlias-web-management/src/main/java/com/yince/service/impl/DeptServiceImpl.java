@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/*
+* @Description: 部门信息业务逻辑层实现类
+* @Author: Yince Boulevard
+* @Date: 2025-2-28 17:16:05
+* @Version: 1.1.0
+* */
 @Service
 public class DeptServiceImpl implements DeptService {
 

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 *
 * */
 @Data
+
 public class EmpExpr {
     private Integer id;
     private Integer empId;
