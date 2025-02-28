@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志格式-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- 格式化输出:
+                %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+                %d表示日期
+                %thread: 线程名
+                %-5level: 日志级别，5位长度，左对齐
+                %logger{36}: logger的36位长度，左对齐 包含类名
+                %msg: 日志消息
+            -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 文件输出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>logs/application.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--日志文件输出的目录-->
+            <!--最多保存30个历史记录文件-->
+            <!--<maxHistory>30</maxHistory>-->
+            <!--最大文件大小，超过会触发滚动，到新文件，默认为10MB-->
+<!--            <maxFileSize>30MB</maxFileSize>-->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 日志级别设置 -->
+    <!--
+    log日志级别(从低到高):
+        level: ALL> TRACE> DEBUG> INFO> WARN> ERROR> FATAL> OFF
+        默认级别: INFO
+          ALL: 所有
+          TRACE: 追踪
+          DEBUG: 调试
+          INFO: 信息
+          WARN: 警告
+          ERROR: 错误
+          FATAL: 致命
+          OFF: 关闭
+    -->
+    <!--大于等于level级别的日志，才会输出记录-->
+    <root level="info">
+        <!--控制STDOUT 输出-->
+        <appender-ref ref="STDOUT" />
+        <!--控制FILE 输出-->
+        <!--关闭FILE输出-->
+<!--        <appender-ref ref="FILE" />-->
+    </root>
+</configuration>

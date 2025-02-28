@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yince.mapper.EmpMapper">
+<!--
+resultType 结果类型
+id 查询方法名
+-->
+    <select id="list" resultType="com.yince.pojo.Emp">
+            select e.*, d.name deptName from emp e left join dept d on e.dept_id = d.id
+            <where>
+                <if test="begin != null and end != null">
+                    and e.entry_date between #{begin} and #{end}
+                </if>
+                <if test="gender != null and gender != ''">
+                    and e.gender = #{gender}
+                </if>
+            <if test="name != null and name != ''">
+                and e.name like concat('%', #{name}, '%')
+            </if>
+            </where>
+            order by e.update_time desc
+    </select>
+</mapper>
