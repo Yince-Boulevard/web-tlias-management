@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传实例</title>
+</head>
+<body>
+<!--文件上传 front-end 三要素
+    1. method="post"
+    2. enctype="multipart/form-data"
+    设置表单的编码类型为多部分表单数据。
+    这种编码方式用于上传文件
+    确保文件内容不会被修改或损坏。
+    当表单包含文件输入时
+    必须使用此编码类型
+    3. type="file"
+-->
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        姓名： <input type="text" name="name">
+        年龄： <input type="text" name="age">
+        图像： <input type="file" name="file">
+        <input type="submit" value="提交">
+    </form>
+</body>
+</html>

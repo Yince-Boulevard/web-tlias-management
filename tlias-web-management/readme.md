@@ -1,4 +1,4 @@
-# Day 01 = 2025-2-25
+# Day 01 = 2025-2-24
 
 ## 今日内容
 
@@ -45,7 +45,7 @@ Mapper层中 接口传入的参数若是一个封装实体，则#{}内直接填�
 1. lombok失效:
    **删除pom.xml中的有关lombok的build标签，固定lombok的版本，在dependency中**
 
-# Day 02 = 2025-2-26
+# Day 02 = 2025-2-25
 
 ## 今日内容:
 
@@ -234,6 +234,7 @@ thinking: 保存emp成功了，而保存empExpr失败了，该怎么办？
   @Transaction(propagation = Propagation.REQUIRED)
   ```
 
+
 | 属性值        | 含义                             |
 | ------------- | -------------------------------- |
 | REQUIRED      | 【默认】有则加入，无则创建新事物 |
@@ -252,6 +253,162 @@ try {
 ...总会执行
 }
 ```
+
+# Day 04 2025-3-1
+
+## 今日内容
+
+1. 文件上传
+2. 对象存储服务OSS
+
+### 文件上传
+
+```html
+ <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
+    姓名： <input type="text" name="name">
+    图像： <input type="file" name="file">
+    <input type="submit" value="上传文件" name="submit">
+</form>
+```
+
+#### 要点
+
+1. 必须为 post 请求方式
+2. enctype 必须为 multipart/form-data
+3. 有一个文件上传的表单项 type="file"
+4. 后端有一个 `MultipartFile file` 来接受文件
+
+#### UUID
+
+```java
+String suffix = originalFileName.substring(originalFileName.lastIndexOf(".")); //获取文件名，从后到前第一个"."（包括）开始截取
+String newFileName = UUID.randomUUID().toString() + suffix; //UUID工具类，生成随机字符串
+```
+
+### 阿里云OSS(Object Storage Service)
+
+1. 开通云存储服务
+2. 创建Bucket
+3. 获取并配置AccessKey（秘钥）
+
+`set OSS_ACCESS_KEY_ID=`+你的accessKey ID
+`set OSS_ACCESS_KEY_SECRET`+你的AccessKey Secret
+
+![image.png](assets/image.png)
+
+4. 引入阿里云OSS依赖
+
+```xml
+        <!--阿里云OSS-->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.18.1</version>
+        </dependency>
+        <!--JAXB相关依赖-->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+```
+
+5. 引入阿里云OSS工具类
+
+将阿里云官方示例代码转换为工具类，让其更加通用
+
+```java
+@Component
+public class AliyunOSSOperator {
+    @Value("${aliyun.oss.endpoint}")
+    private String endpoint;
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+    @Value("${aliyun.oss.accessKeyId}")
+    private String region;
+
+    public String upload(byte[] content, String originalFileName) throws Exception {
+        // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+        // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
+        // 获取当前系统时间
+        String uploadTime = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM"));
+        // 构建一个新的不重复的文件名
+        String dir = uploadTime + "/";
+        // 获取文件后缀名
+        assert originalFileName != null; // 断言，如果为空则抛出异常
+        String suffix = originalFileName.substring(originalFileName.lastIndexOf("."));
+        // 通过UUID生成新的文件名
+        String newFileName = UUID.randomUUID().toString() + suffix;
+        // 通过不同后缀判断存在哪一个文件夹(使用switch)
+        dir = switch (suffix) {
+            case ".jpg", ".png", ".gif" ->
+                // 保存图片
+                    uploadTime + "/images";
+            case ".mp4", ".avi" ->
+                // 保存视频
+                    uploadTime + "/videos";
+            case ".mp3", ".wav" ->
+                // 保存音频
+                    uploadTime + "/audios";
+            case ".txt", ".pdf", ".doc", ".docx" ->
+                // 保存文档
+                    uploadTime + "/documents";
+            default ->
+                // 保存其他文件
+                    uploadTime + "/others";
+        };
+        String objectName = dir + "/" + newFileName;
+        // 创建OSSClient实例。
+        ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+        clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+        OSS ossClient = OSSClientBuilder.create()
+                .endpoint(endpoint)
+                .credentialsProvider(credentialsProvider)
+                .clientConfiguration(clientBuilderConfiguration)
+                .region(region)
+                .build();
+        // 上传文件
+        try {
+            ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(content));
+        } finally {
+            ossClient.shutdown();
+        }
+        return endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" +objectName;
+    }
+}
+```
+
+7. 优化代码，将工具类需要的属性封装为一个实体类
+
+```java
+@Data
+@Component
+@ConfigurationProperties(prefix = "aliyun.oss")
+public class AliyunOSSProperties {
+    private String endpoint;
+    private String bucketName;
+    private String region;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Point
 
@@ -281,6 +438,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
+  # 文件上传相关配置
+  servlet:
+    multipart:
+      # 最大单个文件大小
+      max-file-size: 10MB
+      # 最大请求总大小
+      max-request-size: 10MB
 # 配置mybatis-plus
 mybatis:
   configuration:
@@ -292,6 +456,12 @@ mybatis:
 logging:
   level:
     org.springframework.jdbc.support.JdbcTransactionManager: debug
+# aliyun相关
+aliyun:
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket-name: java-ai-yince
+    region: cn-beijing
 ```
 
 logback.xml
