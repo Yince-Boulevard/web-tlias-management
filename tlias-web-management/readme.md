@@ -175,7 +175,7 @@ public class EmpQueryParam {
 
 ### Mybatis中的动态 SQL
 
-1. <where> 根据查询条件来生成where关键字，自动去除多余的and或者or
+1. <where> 根据查询条件来生成 `where`关键字，自动去除多余的and或者or
 
 ### 批量插入
 
@@ -200,7 +200,7 @@ public class EmpQueryParam {
 `@Options(useGeneratedKeys = true)`获取到生成的主键，返回主键赋值给emp中的id
 
 ```java
-@Options(useGeneratedKeys = true)
+@Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into emp(username, name, gender, phone, job, salary, image, entry_date, dept_id, create_time, update_time) " +
     "values (#{username}, #{name},#{gender},#{phone},#{job},#{salary},#{image},#{entry_date},#{deptId},#{createTime},#{updateTime})")
     void insert(Emp emp);
@@ -260,6 +260,7 @@ try {
 
 1. 文件上传
 2. 对象存储服务OSS
+3. 员工管理中的(员工删除，员工查询，员工管理)
 
 ### 文件上传
 
@@ -325,12 +326,8 @@ String newFileName = UUID.randomUUID().toString() + suffix; //UUID工具类，�
 ```java
 @Component
 public class AliyunOSSOperator {
-    @Value("${aliyun.oss.endpoint}")
-    private String endpoint;
-    @Value("${aliyun.oss.bucketName}")
-    private String bucketName;
-    @Value("${aliyun.oss.accessKeyId}")
-    private String region;
+    @Autowired
+    private AliyunOSSProperties aliyunOSSProperties;
 
     public String upload(byte[] content, String originalFileName) throws Exception {
         // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
@@ -397,16 +394,69 @@ public class AliyunOSSProperties {
 }
 ```
 
+### 员工管理
 
+#### 员工删除
 
+> 请求路径：/emps
+>
+> 请求方式：DELETE
+>
+> 参数类型：QueryParam: ids
+>
+> 参数实例：/emp?ids=1,2,3
+>
+> 返回类型：application/json
 
+```xml
+    <!-- 根据员工id批量删除员工工作经历信息-->
+    <delete id="deleteByEmpIds">
+        delete from emp_expr where emp_id in
+        <foreach collection="empIds" item="empId" open="(" close=")" separator=",">
+            #{empId}
+        </foreach>
+    </delete>
+```
 
+1. 根据员工id批量删除员工的基本信息
+2. 根据员工id批量删除员工的工作经历信息
 
+#### 查询员工
 
+ResultMap
 
+一个员工对应多个工作信息，要在xml中手动封装
 
+```xml
+    <!--根据id查询员工基本信息和工作经历信息-->
+    <resultMap id="empResultMap" type="com.yince.pojo.Emp">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="phone" property="phone"/>
+        <result column="job" property="job"/>
+        <result column="salary" property="salary"/>
+        <result column="image" property="image"/>
+        <result column="entry_date" property="entryDate"/>
+        <result column="dept_id" property="deptId"/>
+        <!--封装工作经历信息-->
+        <collection property="exprList" ofType="com.yince.pojo.EmpExpr">
+            <id column="ee_id" property="id"/>
+            <result column="ee_begin" property="begin"/>
+            <result column="ee_end" property="end"/>
+            <result column="ee_company" property="company"/>
+            <result column="ee_job" property="job"/>
+        </collection>
+    </resultMap>
+```
 
+#### 修改员工
 
+1. 根据id修改员工的基本信息
+2. 修改员工的工作经历信息
+   1. 先删除
+   2. 再增加
 
 
 
@@ -456,10 +506,11 @@ mybatis:
 logging:
   level:
     org.springframework.jdbc.support.JdbcTransactionManager: debug
-# aliyun相关
+
+# aliyun相关,在类中通过@value 获取
 aliyun:
   oss:
-    endpoint: oss-cn-beijing.aliyuncs.com
+    endpoint: https://oss-cn-beijing.aliyuncs.com
     bucket-name: java-ai-yince
     region: cn-beijing
 ```

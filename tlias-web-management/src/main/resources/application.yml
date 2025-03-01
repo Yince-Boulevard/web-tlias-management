@@ -26,9 +26,10 @@ mybatis:
 logging:
   level:
     org.springframework.jdbc.support.JdbcTransactionManager: debug
+
 # aliyun相关,在类中通过@value 获取
 aliyun:
   oss:
-    endpoint: oss-cn-beijing.aliyuncs.com
+    endpoint: https://oss-cn-beijing.aliyuncs.com
     bucket-name: java-ai-yince
     region: cn-beijing

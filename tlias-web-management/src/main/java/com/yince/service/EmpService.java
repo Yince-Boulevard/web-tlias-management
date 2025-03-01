@@ -3,10 +3,7 @@ package com.yince.service;
 import com.yince.pojo.Emp;
 import com.yince.pojo.EmpQueryParam;
 import com.yince.pojo.PageResult;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
+import java.util.List;
 
 public interface EmpService {
 
@@ -22,4 +19,23 @@ public interface EmpService {
     * @param emp 员工实体类
     * */
     void save(Emp emp);
+
+    /**
+     * 删除员工（包括经历）
+     * @param ids
+     */
+    void delete(List<Integer> ids);
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    Emp getInfo(Integer id);
+
+    /**
+     * 修改员工信息（包括基本和工作经历信息)
+     * @param emp
+     */
+    void update(Emp emp);
 }

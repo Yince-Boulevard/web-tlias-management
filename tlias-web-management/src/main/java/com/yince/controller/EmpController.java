@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
 * @Description: 员工管理控制层
 * @Author: Yince Boulevard
@@ -60,4 +62,43 @@ public class EmpController {
         empService.save(emp);
         return Result.success();
     }
+
+    /**
+     * 删除员工
+     * @param ids 前端请求的员工的id数组
+     * @return
+     * @Author: Yince Boulevard
+     * @Date: 2025-3-1 21:11:42
+     * @Example: /emps/delete?ids=1,2,3
+     */
+    @DeleteMapping
+    public Result delete(@RequestParam List<Integer> ids){
+        log.info("删除员工: {}" , ids);
+        empService.delete(ids);
+        return Result.success();
+    }
+
+    /**
+     * 修改员工信息
+     * @Param emp 员工信息,接受前端json格式参数
+     */
+    @PutMapping
+    public Result update(@RequestBody Emp emp){
+        log.info("修改员工: {}" , emp);
+        empService.update(emp);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id 路径参数
+     * @return 员工信息
+     */
+    @GetMapping("/{id}")
+    public Result getInfo(@PathVariable Integer id){
+        log.info("查询员工: {}" , id);
+        Emp emp = empService.getInfo(id);
+        return Result.success(emp);
+    }
+
 }

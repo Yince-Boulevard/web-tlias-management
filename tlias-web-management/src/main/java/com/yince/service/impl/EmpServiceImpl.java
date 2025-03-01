@@ -89,4 +89,52 @@ public class EmpServiceImpl implements EmpService {
 
 
     }
+
+    /**
+     * 删除员工信息
+     * @param: 前端请求的员工ids
+     */
+    @Transactional(rollbackFor = {Exception.class})
+    @Override
+    public void delete(List<Integer> ids) {
+        // 1. 批量删除员工基本信息
+        empMapper.deleteByIds(ids);
+        // 2. 批量删除员工工作经历信息
+        empExprMapper.deleteByEmpIds(ids);
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Emp getInfo(Integer id) {
+        return empMapper.getById(id);
+    }
+
+    /**
+     * 修改员工信息
+     * @param emp
+     */
+    @Transactional(rollbackFor = {Exception.class})
+    @Override
+    public void update(Emp emp) {
+        // 1. 修改员工基本信息
+        emp.setUpdateTime(LocalDateTime.now());
+        empMapper.updateById(emp);
+        // 2. 修改员工工作经历信息
+            // 2.1 先删
+        empExprMapper.deleteByEmpIds(List.of(emp.getId()));
+            // 2.2 再新增
+        List<EmpExpr> exprList = emp.getExprList();
+        if(!CollectionUtils.isEmpty(exprList)){
+            // 遍历集合，为empId赋值
+            exprList.forEach(empExpr -> empExpr.setEmpId(emp.getId()));
+            // 调用empExprMapper中的批量保存方法
+            empExprMapper.insertBatch(exprList);
+        }
+
+    }
+
 }

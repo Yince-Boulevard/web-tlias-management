@@ -74,6 +74,12 @@ public class UploadController {
     @Autowired
     private AliyunOSSOperator aliyunOSSOperator;
 
+    /**
+     * 文件上传(阿里云OSS存储）)
+     * @param file
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/upload")
     public Result upload(MultipartFile file) throws Exception {
         log.info("文件上传: {}" , file.getOriginalFilename());
