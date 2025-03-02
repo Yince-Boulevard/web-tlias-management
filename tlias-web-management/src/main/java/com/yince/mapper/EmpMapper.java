@@ -2,13 +2,11 @@ package com.yince.mapper;
 
 import com.yince.pojo.Emp;
 import com.yince.pojo.EmpQueryParam;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /*
 * 员工数据访问接口
@@ -53,4 +51,19 @@ public interface EmpMapper {
      * @param emp
      */
     void updateById(Emp emp);
+
+    /**
+     * 查询员工岗位数据
+     * @return
+     */
+    @MapKey("pos")
+    List<Map<String,Object>> countEmpJobData();
+
+    /**
+     * 查询员工性别数据
+     * @return: Map<String,Integer>
+     * @Example: ["男": 10, "女": 20]
+     */
+    @MapKey("name")
+    List<Map<String,Object>> countEmpGenderData();
 }

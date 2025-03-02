@@ -455,9 +455,106 @@ ResultMap
 
 1. 根据id修改员工的基本信息
 2. 修改员工的工作经历信息
+
    1. 先删除
    2. 再增加
 
+# Day 05 = 2025-3-2
+
+## 今日内容
+
+### 修改员工SQL优化
+
+要修改哪个字段才动态生成这条字段SQL
+
+```xml
+<!--<SET>标签：自动生成set关键字，自动删除多余","-->
+<update id="updateById" parameterType="map">
+    UPDATE emp
+    <set>
+        <if test="username != null and username != ''">username = #{username},</if>
+        <if test="name != null and name != ''">name = #{name},</if>
+        <if test="gender != null">gender = #{gender},</if>
+        <if test="phone != null and phone != ''">phone = #{phone},</if>
+        <if test="job != null">job = #{job},</if>
+        <if test="salary != null and salary != ''">salary = #{salary},</if>
+        <if test="image != null and image != ''">image = #{image},</if>
+        <if test="entryDate != null">entry_date = #{entryDate,jdbcType=DATE},</if>
+        <if test="deptId != null">dept_id = #{deptId},</if>
+        <if test="updateTime != null">update_time = #{updateTime}</if>
+    </set>
+    WHERE id = #{id}
+</update>
+```
+
+### 全局异常处理器
+
+若服务端出错，给前端反馈
+
+@RestControllerAdvice = @ControllerAdvice + @ResponseBody
+
+```java
+@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler
+    public Result handleException(Exception e) {
+        log.error("服务端出错: ",e);
+        return Result.error("服务端出错,可联系管理员WeChat: YinceBoulevard");
+    }
+
+    @ExceptionHandler
+    public Result handlerDuplicateKeyException(DuplicateKeyException e) {
+        log.error("数据库主键重复: ",e);
+        String message = e.getMessage();
+        int i = message.indexOf("Duplicate entry");
+        String errMsg = message.substring(i);
+        String[] arr = errMsg.split(" ");
+        return Result.error(arr[2] + " 已存在");
+    }
+}
+```
+
+### 数据可视化
+
+#### 职位信息统计
+
+核心: 查询到的数据如何封装？
+
+```java
+    /**
+     * 获取员工岗位数据
+     * @return
+     */
+    @Override
+    public JobOption getEmpJobData() {
+        // 1. 调用mapper接口获取统计数据
+        List<Map<String, Object>> list = empMapper.countEmpJobData();
+        // 2. 组装结果并返回
+        /* list:
+        * pos=教研主管,num=1
+        * */
+        List<Object> jobList = list.stream().map(dataMap -> dataMap.get("pos")).toList();
+        List<Object> numList = list.stream().map(dataMap -> dataMap.get("num")).toList();
+        return new JobOption(jobList, numList);
+    }
+```
+
+#### 性别信息统计
+
+
+
+
+### 班级管理
+
+#### 条件分页查询班级
+
+1. 统一条件分页查询结果封装实体类 PageResult
+2. Result 包含 PageResult
+3. 要先把查询数据封装到 PageResult 再把PageResult封装到Result
+4. 其中 PageResult 中包含 total(总记录数)和rows(实际的数据)
+5. 查询参数过多，可以封装为一个实体类 ClazzQueryParm
 
 
 ## Point
@@ -465,6 +562,9 @@ ResultMap
 # Project Summary
 
 ## 1. 项目构建
+
+1. jdk选择
+2. pom.xml 依赖管理
 
 ## 2. application.yml、logback.xml配置
 
@@ -576,3 +676,11 @@ logback.xml
     </root>
 </configuration>
 ```
+
+## SpringIOC,DI,SpringMVC三层架构
+
+## Restful API
+
+## Mybatis动态SQL
+
+## 全局异常处理器
