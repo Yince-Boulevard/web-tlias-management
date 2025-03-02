@@ -12,4 +12,35 @@ public interface ClazzService {
      * @param clazzQueryParam
      */
     PageResult<Clazz> page(ClazzQueryParam clazzQueryParam);
+
+    /**
+     * 删除班级
+     * @param id
+     */
+    void deleteById(Integer id);
+
+    /**
+     * 保存班级
+     * @param clazz
+     */
+    void add(Clazz clazz);
+
+    /**
+     * 根据id查询班级
+     * @param id
+     * @return
+     */
+    Clazz getById(Integer id);
+
+    /**
+     * 更新班级
+     * @param clazz
+     */
+    void update(Clazz clazz);
+
+    /**
+     * 查询班级列表
+     * @return
+     */
+    List<Clazz> getAll();
 }

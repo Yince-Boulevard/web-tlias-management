@@ -1,6 +1,8 @@
 package com.yince.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
  * @Date: 2025-3-2 16:04:31
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Student {
     private Integer id; // 主键ID
     private String name; // 姓名
@@ -27,4 +31,7 @@ public class Student {
     private Byte violationScore; // 违规扣分
     private LocalDateTime createTime; // 创建时间
     private LocalDateTime updateTime; // 修改时间
+
+    /*手动封装额外的查询结果*/
+    private String clazzName;
 }

@@ -234,7 +234,6 @@ thinking: 保存emp成功了，而保存empExpr失败了，该怎么办？
   @Transaction(propagation = Propagation.REQUIRED)
   ```
 
-
 | 属性值        | 含义                             |
 | ------------- | -------------------------------- |
 | REQUIRED      | 【默认】有则加入，无则创建新事物 |
@@ -543,9 +542,6 @@ public class GlobalExceptionHandler {
 
 #### 性别信息统计
 
-
-
-
 ### 班级管理
 
 #### 条件分页查询班级
@@ -555,6 +551,20 @@ public class GlobalExceptionHandler {
 3. 要先把查询数据封装到 PageResult 再把PageResult封装到Result
 4. 其中 PageResult 中包含 total(总记录数)和rows(实际的数据)
 5. 查询参数过多，可以封装为一个实体类 ClazzQueryParm
+
+#### 新增班级
+
+#### 删除班级
+
+#### 修改班级
+
+### 学员管理
+
+#### 学员列表查询（条件查询）
+
+
+
+
 
 
 ## Point
