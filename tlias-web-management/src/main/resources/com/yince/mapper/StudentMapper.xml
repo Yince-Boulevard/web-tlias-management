@@ -3,7 +3,62 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yince.mapper.StudentMapper">
-<!-- 分页查询 -->
+<!-- 新增学生基本信息-->
+
+<!-- 修改学生基本信息 -->
+<update id="updateById">
+    update student
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="no != null and no != ''">
+                no = #{no},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                id_card = #{idCard},
+            </if>
+            <if test="isCollege != null">
+                is_college = #{isCollege},
+            </if>
+            <if test="degree != null and degree != ''">
+                degree = #{degree},
+            </if>
+            <if test="graduationDate != null">
+                graduation_date = #{graduationDate},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="clazzId != null and clazzId != ''">
+                clazz_id = #{clazzId},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="violationScore != null">
+                violation_score = violation_score + #{violationScore},
+            </if>
+            violation_count = violation_count + 1,
+        </set>
+    where id = #{id}
+</update>
+
+
+<!--批量删除学生-->
+    <delete id="deleteBatchByIds">
+        delete from student where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+<!-- 分页查询学生列表 -->
 <select id="list" resultType="com.yince.pojo.Student">
     select
         s.*,c.name as clazzName from student s
@@ -24,5 +79,22 @@
     </where>
     order by s.update_time desc
 </select>
+<!-- 统计每个学位的学员数量-->
+    <select id="countStudentDegreeData" resultType="java.util.Map">
+        SELECT
+            CASE
+                WHEN degree IS NULL THEN '未知'
+                WHEN degree = 1 THEN '初中'
+                WHEN degree = 2 THEN '高中'
+                WHEN degree = 3 THEN '大专'
+                WHEN degree = 4 THEN '本科'
+                WHEN degree = 5 THEN '硕士'
+                WHEN degree = 6 THEN '博士'
+                ELSE '其他'
+                END AS 'name',
+                COUNT(*) AS 'value'
+        FROM student
+        GROUP BY degree order by value
+    </select>
 
 </mapper>

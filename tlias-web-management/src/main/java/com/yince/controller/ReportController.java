@@ -1,6 +1,7 @@
 package com.yince.controller;
 
 import com.yince.mapper.EmpMapper;
+import com.yince.pojo.ClazzOption;
 import com.yince.pojo.JobOption;
 import com.yince.pojo.Result;
 import com.yince.service.ReportService;
@@ -37,10 +38,24 @@ public class ReportController {
         return Result.success(jobOption);
     }
 
-    @GetMapping("empGenderData")
+    @GetMapping("/empGenderData")
     public Result getEmpGenderData(){
         log.info("查询员工性别数据");
         List<Map<String,Object>> genderList = reportService.getEmpGenderData();
         return Result.success(genderList);
+    }
+
+    @GetMapping("/studentDegreeData")
+    public Result getStudentDegreeData(){
+        log.info("查询学生学历数据");
+        List<Map<String,Object>> degreeList = reportService.getStudentDegreeData();
+        return Result.success(degreeList);
+    }
+
+    @GetMapping("/studentCountData")
+    public Result getStudentCountData(){
+        log.info("查询学生学历数据");
+        ClazzOption clazzOption = reportService.getStudentCountData();
+        return Result.success(clazzOption);
     }
 }

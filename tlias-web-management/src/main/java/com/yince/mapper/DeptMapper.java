@@ -66,4 +66,12 @@ public interface DeptMapper {
     * */
     @Select("select id, name, create_time, update_time from dept where id = #{id}")
     Dept findById(Integer id);
+
+    /**
+     * 根据部门id查询员工数量
+     * @param id
+     * @return
+     */
+    @Select("select count(*) from emp where dept_id = #{id}")
+    int getEmpList(int id);
 }

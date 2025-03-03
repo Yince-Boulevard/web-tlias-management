@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.jetbrains.annotations.PropertyKey;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ClazzMapper {
@@ -52,4 +53,11 @@ public interface ClazzMapper {
      */
     @Select("select id,name,room,begin_date,end_date,master_id,subject,create_time,update_time from clazz")
     List<Clazz> getAll();
+
+    /**
+     * 查询班级统计数据
+     * @return
+     * @Example {"name": "A班", "num": 10}, {"name": "B班", "count": 20}
+     */
+    List<Map<String, Object>> countClazzData();
 }

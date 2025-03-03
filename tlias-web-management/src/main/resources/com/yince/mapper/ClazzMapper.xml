@@ -63,4 +63,16 @@
         </where>
         order by c.update_time desc
     </select>
+<!-- 统计班级数据-->
+    <select id="countClazzData" resultType="java.util.Map">
+        SELECT
+            c.name AS "name",
+            COUNT(s.id) AS "value"
+        FROM
+            clazz c
+                LEFT JOIN
+            student s ON c.id = s.clazz_id
+        GROUP BY
+            c.name
+    </select>
 </mapper>

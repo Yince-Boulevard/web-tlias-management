@@ -1,5 +1,6 @@
 package com.yince.service;
 
+import com.yince.exception.KeyException;
 import com.yince.pojo.Dept;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public interface DeptService {
     * @Param: id 整型，前端发送的要删除的部门的id
     * @Return: void 无返回值
     * */
-    void deleteById(int id);
+    void deleteById(int id) throws KeyException;
     /**
     * 修改部门
     * @Param: dept 部门的实体类，前端发送的要修改的部门信息

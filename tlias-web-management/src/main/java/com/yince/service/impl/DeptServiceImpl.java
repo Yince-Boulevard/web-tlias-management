@@ -1,5 +1,6 @@
 package com.yince.service.impl;
 
+import com.yince.exception.KeyException;
 import com.yince.mapper.DeptMapper;
 import com.yince.pojo.Dept;
 import com.yince.service.DeptService;
@@ -36,6 +37,10 @@ public class DeptServiceImpl implements DeptService {
      */
     @Override
     public void deleteById(int id) {
+        // 1. 先查询部门下是否有员工
+        if (deptMapper.getEmpList(id) > 0) {
+            throw new KeyException(500,"约束异常");
+        }
         deptMapper.deleteById(id);
     }
 

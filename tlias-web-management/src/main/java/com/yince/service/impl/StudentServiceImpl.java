@@ -11,6 +11,7 @@ import com.yince.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,4 +35,53 @@ public class StudentServiceImpl implements StudentService {
         Page<Student> p = (Page<Student>) studentList;
         return new PageResult<Student>(p.getTotal(), p.getResult());
     }
+
+    /**
+     * 批量删除
+     * @param ids
+     * @Author: Yince Boulevard
+     * @Date: 2025-3-3 15:53:32
+     */
+    @Override
+    public void delete(List<Integer> ids) {
+        studentMapper.deleteBatchByIds(ids);
+    }
+
+    /**
+     * 保存学生
+     * @param student
+     */
+    @Override
+    public void save(Student student) {
+        // 1. 补充基础信息
+        student.setCreateTime(LocalDateTime.now());
+        student.setUpdateTime(LocalDateTime.now());
+        studentMapper.insert(student);
+    }
+
+    /**
+     * 根据id查询学生信息的实现类
+     * @param id
+     * @return
+     * @Author: Yince Boulevard
+     * @Date: 2025-3-3 16:13:08
+     */
+    @Override
+    public Student getInfo(Integer id) {
+        return studentMapper.getById(id);
+    }
+
+    /**
+     * 修改学生信息
+     * @param student
+     */
+    @Override
+    public void update(Student student) {
+        // 1. 补充基础信息
+        student.setUpdateTime(LocalDateTime.now());
+        // 2. 执行修改
+        studentMapper.updateById(student);
+    }
+
+
 }

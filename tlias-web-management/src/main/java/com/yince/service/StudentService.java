@@ -13,4 +13,34 @@ public interface StudentService {
      * @return
      */
     PageResult<Student> page(StudentQueryParam studentQueryParam);
+
+    /**
+     * 该接口用于删除学员信息
+     * @param ids
+     * @Author: Yince Boulevard
+     * @Date: 2025-3-3 15:53:13
+     */
+    void delete(List<Integer> ids);
+
+    /**
+     * 该接口用于保存学员信息
+     * @param student
+     */
+    void save(Student student);
+
+    /**
+     * 该接口用于根据id查询学员信息
+     * @param id
+     * @return
+     */
+    Student getInfo(Integer id);
+
+    /**
+     * 该接口用于修改学员信息
+     * @param student
+     * @Author: Yince Boulevard
+     * @Date: 2025-3-3 16:17:06
+     */
+    void update(Student student);
+
 }
