@@ -33,3 +33,10 @@ aliyun:
     endpoint: https://oss-cn-beijing.aliyuncs.com
     bucket-name: java-ai-yince
     region: cn-beijing
+
+# jwt相关
+com:
+  jwt:
+    user-secret-key: VmpGa2MyUldhM2xXVjJSU1lsUnJlRmxyWkZkTmJHeFpVMjF6UFE9PQ== # 秘钥
+    user-ttl: 7200000 # 用户token过期时间
+    user-token-name: authentication # 用户token名称

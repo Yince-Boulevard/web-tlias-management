@@ -14,20 +14,19 @@ import java.util.List;
 * */
 @Data
 public class Emp {
-    /*帮我创建emp表的实体类*/
-    private Integer id;
-    private String username;
-    private String password;
-    private String name;
-    private Integer gender;
-    private String phone;
-    private Integer job;
-    private Integer salary;
-    private String image;
-    private LocalDate entryDate;
-    private Integer deptId;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Integer id; //主键id
+    private String username; //用户名
+    private String password; //密码
+    private String name; //姓名
+    private Integer gender; //性别
+    private String phone; //手机号
+    private Integer job; //职位
+    private Integer salary; //薪资
+    private String image; //头像
+    private LocalDate entryDate; //入职日期
+    private Integer deptId; //部门id
+    private LocalDateTime createTime; //创建时间
+    private LocalDateTime updateTime; //更新时间
 
     // 关联属性
     // 封装部门名称

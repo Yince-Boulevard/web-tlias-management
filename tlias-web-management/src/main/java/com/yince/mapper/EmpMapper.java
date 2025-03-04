@@ -66,4 +66,20 @@ public interface EmpMapper {
      */
     @MapKey("name")
     List<Map<String,Object>> countEmpGenderData();
+
+    /**
+     * 根据用户名密码查询员工
+     * @param emp
+     * @return
+     */
+    @Select("select * from emp where username = #{username} and password = #{password}")
+    Emp getByUsernameAndPassword(Emp emp);
+
+    /**
+     * 根据用户名查询员工
+     * @param emp
+     * @return
+     */
+    @Select("select * from emp where username = #{username}")
+    Emp getByUsername(Emp emp);
 }

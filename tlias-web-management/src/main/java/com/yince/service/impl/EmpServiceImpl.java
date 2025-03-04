@@ -7,6 +7,8 @@ import com.yince.mapper.EmpMapper;
 import com.yince.pojo.*;
 import com.yince.service.EmpLogService;
 import com.yince.service.EmpService;
+import com.yince.utils.JwtUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +16,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * 员工业务实现类
@@ -22,6 +26,7 @@ import java.util.List;
 * @Date: 2025-2-26 20:24:29
 * @Version: 1.0.1
 * */
+@Slf4j
 @Service
 public class EmpServiceImpl implements EmpService {
 
@@ -31,6 +36,8 @@ public class EmpServiceImpl implements EmpService {
     private EmpExprMapper empExprMapper;
     @Autowired
     private EmpLogService empLogService;
+    @Autowired
+    private JwtProperties jwtProperties;
     /*
     * 基于pagehelper分页查询员工信息s
     * @param page 起始页码
@@ -135,6 +142,39 @@ public class EmpServiceImpl implements EmpService {
             empExprMapper.insertBatch(exprList);
         }
 
+    }
+
+    /**
+     * 员工登录
+     * @param emp
+     * @return
+     */
+    @Override
+    public LoginInfo login(Emp emp) {
+        // 1. 调用数据访问层方法查询员工信息
+        Emp e1 = empMapper.getByUsername(emp);
+        // 2. 判断查询结果是否为空
+        if(e1 != null){
+            log.info("数据库存在该用户: {}", e1);
+            Emp e2 = empMapper.getByUsernameAndPassword(emp);
+            if(e2 != null){
+                log.info("用户名和密码正确: {}", e2);
+                // 生成jwt token
+                //登陆controller中生成，返回给客户端
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("id",e2.getId());
+                claims.put("username",e2.getUsername());
+                String token = JwtUtils.createJwt(
+                        jwtProperties.getUserSecretKey(),
+                        jwtProperties.getUserTtl(),
+                        claims
+                );
+                return new LoginInfo(e2.getId(), e2.getUsername(), e2.getName(), token);
+            }else {
+                return new LoginInfo(0,"密码错误"," "," ");
+            }
+        }
+        return new LoginInfo(-1,"用户不存在"," ", " ");
     }
 
 }

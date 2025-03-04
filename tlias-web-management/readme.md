@@ -563,6 +563,12 @@ public class GlobalExceptionHandler {
 
 #### 学员列表查询（条件查询）条件查询
 
+# Day 06 = 2025-3-3 17:55:07
+
+## 今日内容
+
+### 学生管理
+
 #### 删除学生
 
 批量删除学生
@@ -573,7 +579,7 @@ public class GlobalExceptionHandler {
 
 #### 修改学生信息
 
-#### 违纪处理相关
+### 违纪处理相关
 
 违纪分数 = 上一次 + 本次违纪扣分
 
@@ -588,6 +594,303 @@ public class GlobalExceptionHandler {
 ### 项目优化
 
 当部门下有员工时则不允许删除该部门，并给前端提示错误信息：对不起，当前部门下有员工，不能直接删除！
+
+# Day 07 = 2025-3-4 18:39:27
+
+## 今日内容
+
+### 登录
+
+分析：根据用户名和密码查询
+
+当用户没有登录，跳转到登录页面
+
+### 登录校验
+
+#### 会话技术
+
+1. Cookie
+2. Session
+3. 令牌
+   优点:
+
+   1. 支持PC、移动端
+   2. 解决集群环境下的认证问题
+   3. 减轻服务器端的压力
+
+#### JWT令牌
+
+组成：
+
+1. Header 头,记录令牌类型、签名算法
+2. Payload 有效载荷,携带一些自定义信息、默认信息
+3. Signature 签名, 防止Token被篡改、确保安全性。将header、payload融入，并加入指定秘钥、通过指定签名算法设计而来
+
+Header:
+
+```json
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Payload:
+
+```json
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+```
+
+步骤：
+
+引入相关依赖
+
+```xml
+        <!-- JWT-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.11</version>
+        </dependency>
+```
+
+> 最新0.12.x版本中很多方法都被弃用
+>
+> 建议以后进阶对新版本的jjwt进行学习
+
+注册的声明（建议但不强制使用）：
+iss: jwt签发者
+sub: jwt所面向的用户
+aud: 接收jwt的一方
+exp: jwt的过期时间，这个过期时间必须要大于签发时间
+nbf: 定义在什么时间之前，该jwt都是不可用的.
+iat: jwt的签发时间
+jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。
+
+```java
+@Component
+public class JwtUtils {
+
+    /**
+     * 生成jwt
+     * 使用Hs256算法, 私匙使用固定秘钥
+     *
+     * @param secretKey jwt秘钥
+     * @param ttlMillis jwt过期时间(毫秒)
+     * @param claims    设置的信息
+     * @return
+     */
+    public static String createJwt(String secretKey, long ttlMillis, Map<String, Object> claims) {
+        // 指定签名的时候使用的签名算法，也就是header那部分
+//        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+        // 生成JWT的时间
+        long expMillis = System.currentTimeMillis() + ttlMillis;
+        Date exp = new Date(expMillis);
+
+        //生成 HMAC 密钥，根据提供的字节数组长度选择适当的 HMAC 算法，并返回相应的 SecretKey 对象。
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        // 设置jwt的body
+        JwtBuilder builder = Jwts.builder()
+                // 设置签名使用的签名算法和签名使用的秘钥
+                .signWith(key)
+                // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
+                .claims(claims)
+                // 设置过期时间
+                .expiration(exp);
+        return builder.compact();
+    }
+
+    /**
+     * Token解密
+     *
+     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
+     * @param token     加密后的token
+     * @return
+     */
+    public static Claims parseJWT(String secretKey, String token) {
+
+        //生成 HMAC 密钥，根据提供的字节数组长度选择适当的 HMAC 算法，并返回相应的 SecretKey 对象。
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        // 得到DefaultJwtParser
+        JwtParser jwtParser = Jwts.parser()
+                // 设置签名的秘钥
+                .verifyWith(key)
+                .build();
+        Jws<Claims> jws = jwtParser.parseSignedClaims(token);
+        Claims claims = jws.getPayload();
+        return claims;
+    }
+}
+
+```
+
+```xml
+# 秘钥、过期时间、用户token名称配置
+com:
+  jwt:
+    user-secret-key: lbw
+    user-ttl: 7200000
+    user-token-name: authentication
+```
+
+```java
+@Data
+@Component
+@ConfigurationProperties(prefix = "com.jwt")
+public class JwtProperties {
+
+    /**
+     * 用户端用户生成jwt令牌相关配置
+     */
+    private String userSecretKey;
+    private long userTtl;
+    private String userTokenName;
+}
+```
+
+生成JWT令牌
+
+```java
+//登陆controller中生成，返回给客户端
+Map<String, Object> claims = new HashMap<>();
+claims.put(JwtClaimsConstant.USER_ID,user.getId());
+claims.put(JwtClaimsConstant.USERNAME,user.getUsername());
+String token = JwtUtils.createJwt(
+    jwtProperties.getUserSecretKey(),
+    jwtProperties.getUserTtl(),
+    claims
+);
+```
+
+解析
+
+```java
+//在拦截器中
+Claims claims = JwtUtils.parseJWT(jwtProperties.getUserSecretKey(), token);
+//claims就是在Pyload中存放的用户信息
+claims.get("keyname")
+```
+
+
+#### 过滤器 Filter
+
+#### 拦截器 Interceptor
+
+> 动态拦截方法调用的机制，Spring 框架中提供的
+>
+> 作用：拦截请求，在指定的方法调用前后，根据业务需要执行预先设定的代码
+
+Step:
+
+1. 定义拦截器
+
+   ```java
+   @Component
+   public class TokenInterceptor implements HandlerInterceptor {
+       @Autowired
+       private JwtUtils jwtUtils;
+       @Autowired
+       private JwtProperties jwtProperties;
+       /**
+        * 请求处理之前调用
+        * @param request 请求
+        * @param response 响应
+        * @param handler 处理器
+        * @return
+        * @throws Exception
+        */
+       @Override
+       public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+           // 3. 如果不是登录请求，则需要校验token
+           String token = request.getHeader("token");
+
+           // 判断token是否为空
+           if (token == null || token.isEmpty()) {
+               // 响应错误信息
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+               response.getWriter().write("token is null");
+               return false;
+           }
+           // 校验token
+           try {
+               // 获取token
+               Claims claims = jwtUtils.parseJWT(jwtProperties.getUserSecretKey(), token);
+           } catch (Exception e) {
+               // 响应错误信息
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+               response.getWriter().write("token is error");
+               return false;
+           }
+
+           return true;
+       }
+
+       /**
+        * 请求处理之后调用
+        * @param request
+        * @param response
+        * @param handler
+        * @param modelAndView
+        * @throws Exception
+        */
+       @Override
+       public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+           log.info("请求处理之后调用");
+           HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+       }
+
+       /**
+        * 请求处理完成之后调用
+        * @param request
+        * @param response
+        * @param handler
+        * @param ex
+        * @throws Exception
+        */
+       @Override
+       public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+           log.info("试图渲染完成之后调用");
+           HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+       }
+   }
+   ```
+2. 注册拦截器
+
+   ```java
+   @Configuration // 标识为配置类 包括@Component注解
+   public class WebConfig implements WebMvcConfigurer {
+       @Autowired
+       private TokenInterceptor tokenInterceptor;
+       @Override
+       public void addInterceptors(InterceptorRegistry registry) {
+           registry.addInterceptor(tokenInterceptor).addPathPatterns("/**").excludePathPatterns("/login");
+       }
+
+   }
+
+   ```
+3. 注入拦截器
+
+##### 执行流程
+
+若Filter和Interceptor都有
+
+1. Filter中放行前的代码
+2. doFilter()
+3. preHandle()
+4. 访问服务器资源
+5. postHandle()
+6. afterComplextion()
+7. Filter中放行后的代码
+
+
 
 ## Point
 

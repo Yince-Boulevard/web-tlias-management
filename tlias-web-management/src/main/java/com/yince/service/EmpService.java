@@ -2,6 +2,7 @@ package com.yince.service;
 
 import com.yince.pojo.Emp;
 import com.yince.pojo.EmpQueryParam;
+import com.yince.pojo.LoginInfo;
 import com.yince.pojo.PageResult;
 import java.util.List;
 
@@ -38,4 +39,11 @@ public interface EmpService {
      * @param emp
      */
     void update(Emp emp);
+
+    /**
+     * 员工登录
+     * @param emp
+     * @return
+     */
+    LoginInfo login(Emp emp);
 }
