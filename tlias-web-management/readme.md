@@ -1042,7 +1042,6 @@ program arguments(命令行参数) > vm options(Java系统属性) > .properties 
 
 如何引入
 
-
 如何注入
 
 ### 
@@ -1186,3 +1185,46 @@ logback.xml
 ## Mybatis动态SQL
 
 ## 全局异常处理器
+
+## 技术方案
+
+JavaWeb
+
+1. 过滤器
+
+2. Cookie、Session
+
+SpringMVC:
+
+1. 接收请求
+2. 响应数据
+3. 拦截器
+4. 全局异常处理
+
+Spring framework
+
+1. IOC
+2. DI
+3. AOP
+4. 事务管理
+
+Mybatis:
+
+1. Mybatis
+
+SpringBoot:
+
+SpringBoot框架
+
+工具、解决方案:
+
+1. JWT
+2. 阿里云OSS
+
+---
+
+Web后端开发完结
+
+---
+2025年3月5日21:48:50
+---
