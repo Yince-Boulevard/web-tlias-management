@@ -1,6 +1,7 @@
 package com.yince.interceptor;
 
 import com.yince.pojo.JwtProperties;
+import com.yince.utils.CurrentHolder;
 import com.yince.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +42,10 @@ public class TokenInterceptor implements HandlerInterceptor {
         try {
             // 获取token
             Claims claims = jwtUtils.parseJWT(jwtProperties.getUserSecretKey(), token);
+            Integer id = Integer.valueOf(claims.get("id").toString());
+            // 存入ThreadLocal中
+            CurrentHolder.setCurrentId(id);
+            log.info("当前用户id：" + id);
         } catch (Exception e) {
             // 响应错误信息
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -76,6 +81,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         log.info("试图渲染完成之后调用");
+        CurrentHolder.remove();
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
 }

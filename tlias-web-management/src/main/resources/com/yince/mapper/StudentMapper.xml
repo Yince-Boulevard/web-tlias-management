@@ -73,8 +73,8 @@
             and s.degree = #{degree}
         </if>
         <!-- 查询指定班级的学生 -->
-        <if test="classId != null and classId !=''">
-            and s.clazz_id = #{classId}
+        <if test="clazzId != null and clazzId !=''">
+            and s.clazz_id = #{clazzId}
         </if>
     </where>
     order by s.update_time desc

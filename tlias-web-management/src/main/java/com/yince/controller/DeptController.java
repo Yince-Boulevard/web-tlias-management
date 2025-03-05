@@ -1,4 +1,5 @@
 package com.yince.controller;
+import com.yince.anno.Log;
 import com.yince.pojo.Dept;
 import com.yince.pojo.Result;
 import com.yince.service.DeptService;
@@ -68,6 +69,7 @@ public class DeptController {
     * /depts?id=1
     * @Return: Result
     * */
+    @Log
     @DeleteMapping
     public Result delete(@RequestParam(value = "id", required = true) Integer id) {
         log.info("根据id删除部门: {}", id);
@@ -79,6 +81,7 @@ public class DeptController {
     * @Param: @RequestBody Dept dept 获取前端发送请求体中json格式的参数，转换为Dept对象
     * @Return: Result
     * */
+    @Log
     @PutMapping
     public Result update(@RequestBody Dept dept) {
         // 查询回显，先把原先数据查询出来放在修改框
@@ -91,6 +94,7 @@ public class DeptController {
     * @Param: @RequestBody Dept dept 获取请求体中json格式的参数，转换为Dept对象
     * @Return: Result
     * */
+    @Log
     @PostMapping
     public Result add(@RequestBody Dept dept) {
         log.info("新增部门: {}" , dept);

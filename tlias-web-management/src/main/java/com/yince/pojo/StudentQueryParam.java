@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class StudentQueryParam {
     private String name;
     private String degree;
-    private Integer classId;
+    private Integer clazzId;
     private Integer Page = 1 ;
     private Integer PageSize = 10;
 }
