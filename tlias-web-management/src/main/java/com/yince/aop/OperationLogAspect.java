@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @Slf4j
-@Aspect
+//@Aspect
 @Component
 public class OperationLogAspect {
 

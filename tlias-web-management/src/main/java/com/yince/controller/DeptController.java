@@ -70,8 +70,8 @@ public class DeptController {
     * @Return: Result
     * */
     @Log
-    @DeleteMapping
-    public Result delete(@RequestParam(value = "id", required = true) Integer id) {
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id) {
         log.info("根据id删除部门: {}", id);
         deptService.deleteById(id);
         return Result.success();
