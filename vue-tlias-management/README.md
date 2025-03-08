@@ -164,3 +164,53 @@ export default defineConfig({
 通过 `row` 和 `col` 组件，自由地组合布局。
 每行24各，通过col中的span属性设置列的宽度
 ### watch监听
+
+# Day 03 = 2025-3-8 20:19:35
+## 新增员工
+## 编辑员工
+## 删除员工
+## 批量删除员工
+## 表单校验
+## 登录页面
+## 携带令牌登录
+```js
+// 添加请求拦截器 - 获取请求头中的token,在请求头中增加token
+request.interceptors.request.use(
+    (config) => { // 成功回调
+        const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+        if (loginUser && loginUser.token) {
+            config.headers.token = loginUser.token
+        }
+        return config
+    }, 
+    (error) => {
+    return Promise.reject(error)
+})
+```
+
+## 打包部署
+点击 npm脚本 build，会生成dist文件夹，里面有index.html，以及静态资源。
+部署到nginx服务器
+其中
+```markdown
+conf 是nginx配置文件
+html 是nginx静态资源文件
+logs 是nginx日志文件
+temp 是nginx临时文件
+nginx 是nginx程序
+```
+
+在nginx.conf配置文件中添加如下代码
+```config
+location / {
+    location ^~ /api/ {
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://localhost:8080;
+    }
+}
+```
+常用命令
+```cmd
+nginx.exe -s reload //重新加载配置文件
+nginx.exe -s stop //停止nginx 
+```

@@ -1,5 +1,32 @@
 <script setup>
-
+import {useRouter} from 'vue-router'
+import {onMounted, ref} from 'vue'
+import { ElMessage,ElMessageBox } from 'element-plus'
+const router = useRouter()
+// 当前登录员工的姓名
+const loginName = ref('')
+onMounted(() => {
+  const loginUser = JSON.parse(localStorage.getItem('loginUser'))
+  if (loginUser) { // 如果loginUser存在，则获取loginUser中的username
+    loginName.value = loginUser.username
+  } else {
+    router.push('/login')
+  }
+})
+const logout = () => {
+  // 弹出确认框
+  ElMessageBox.confirm('Are you sure to logout?', '提示', {
+    confirmButtonText: 'Confirm',
+    cancelButtonText: 'Cancel',
+    type: 'warning'
+  }).then(async() => { // 确认
+    ElMessage.success('Logout Success')
+    localStorage.removeItem('loginUser')
+    router.push('/login')
+  }).catch(() => {// 取消
+    ElMessage.info('Cancel Logout')
+  })
+}
 </script>
 
 <template>
@@ -10,14 +37,14 @@
         <span class="title">Tlias Intelligent Learning System</span>
         <span class="right_tool">
           <a href="">
-            <el-icon>
+            <el-icon size="small">
               <EditPen />
             </el-icon> Update Password &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
           </a>
-          <a href="">
-            <el-icon>
+          <a href="javascript:;" @click="logout">
+            <el-icon size="small">
               <SwitchButton />
-            </el-icon> Log out
+            </el-icon> Log out &nbsp; <el-icon size="20" class="is-loading"><Avatar /></el-icon>{{ loginName }}
           </a>
         </span>
       </el-header>

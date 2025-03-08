@@ -135,7 +135,7 @@ const deptFormRef = ref()
   <!-- dialog对话框 -->
   <el-dialog v-model="dialogFormVisible" :title="formTitle" width="500">
     <el-form :model="dept" :rules="rules" ref="deptFormRef">
-      <el-form-item prop="name" label="Department Name" label-width="80px">
+      <el-form-item prop="name" size="small" label="Department Name" label-width="80px">
         <el-input v-model="dept.name" placeholder="Input department name" />
       </el-form-item>
     </el-form>

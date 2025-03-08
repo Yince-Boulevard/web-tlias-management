@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 @Slf4j
-//@Component
+@Component
 public class TokenInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtUtils jwtUtils;
@@ -35,7 +35,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (token == null || token.isEmpty()) {
             // 响应错误信息
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("token is null");
+            log.info("token is null");
             return false;
         }
         // 校验token
